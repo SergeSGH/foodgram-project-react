@@ -1,0 +1,112 @@
+from django.shortcuts import get_object_or_404
+from django.contrib.auth import get_user_model
+from rest_framework import viewsets, filters, permissions, status
+from rest_framework.decorators import action
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.response import Response
+from .serializers import UserSerializer, SetPassSerializer
+from recipes.serializers import SubscriptionSerializer
+from recipes.models import Follow
+
+
+from .models import User
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = (
+        permissions.AllowAny,
+    )
+    pagination_class = PageNumberPagination
+    filter_backends = (
+        filters.SearchFilter,
+    )
+    search_fields = ('username',)
+
+    @action(
+        detail=False,
+        methods=('get',),
+        url_path='me',
+        permission_classes=(
+            permissions.IsAuthenticated,
+        ),
+    )
+    def me(self, request):
+        serializer = self.get_serializer(request.user)
+        return Response(
+            data=serializer.data,
+            status=status.HTTP_200_OK
+        )
+
+    @action(
+        detail=False,
+        methods=('post',),
+        url_path='set_password',
+        permission_classes=(
+            permissions.IsAuthenticated,
+        ),
+    )
+    def set_password(self, request):
+        serializer = SetPassSerializer(data=request.data)
+        user=request.user
+        if serializer.is_valid():
+            if user.check_password(request.data.get('current_password')):
+                user.set_password(request.data.get('new_password'))
+                user.save()
+                return Response(data=serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response('некорректный пароль', status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response('некорректные данные', status=status.HTTP_400_BAD_REQUEST)
+
+    @action(
+        detail=True,
+        methods=('post', 'delete'),
+        url_path='subscribe',
+        permission_classes=(
+            permissions.IsAuthenticated,
+        ),
+    )
+    def subscribe(self, request, **kwargs):
+        author = get_object_or_404(User, pk=self.kwargs.get('pk'))
+        recipes_limit=self.request.query_params.get('recipes_limit')
+        serializer = SubscriptionSerializer(author, context={'request': request, 'recipes_limit': recipes_limit})
+        if request.method == 'POST':
+            if Follow.objects.filter(
+                author=author,
+                user=self.request.user
+            ).exists():
+                return Response(
+                'На автора уже есть подписка',
+                status=status.HTTP_400_BAD_REQUEST
+            )
+            if author == self.request.user:
+                return Response(
+                'Нельзя подписаться на самого себя',
+                status=status.HTTP_400_BAD_REQUEST
+            )
+            Follow.objects.create(
+                author=author,
+                user=self.request.user
+            )
+            return Response(
+                serializer.data,
+                status=status.HTTP_201_CREATED
+            )
+        if not Follow.objects.filter(
+            author=author,
+            user=self.request.user
+        ).exists():
+            return Response(
+            'Подписки нет',
+            status=status.HTTP_400_BAD_REQUEST
+        )
+        record = Follow.objects.filter(
+            author=author,
+            user=self.request.user
+        )
+        record.delete()
+        return Response(
+            status=status.HTTP_204_NO_CONTENT
+        )
