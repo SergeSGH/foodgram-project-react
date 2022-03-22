@@ -16,17 +16,22 @@ from rest_framework.response import Response
 
 from subscriptions.models import IsFavorite, IsInBasket, Recipe
 from users.permissions import IsAuthor, ReadOnly
+from .filters import RecipeFilter
 from .models import Ingredient, Tag
 from .serializers import (IngredientSerializer, RecipeSerializer,
                           RecipeSerializerShort, TagSerializer)
 
 
 class IngredientViewSet(viewsets.ModelViewSet):
-    queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     permission_classes = (ReadOnly,)
     pagination_class = None
 
+    def get_queryset(self):
+        name = self.request.query_params.get('name')
+        queryset = Ingredient.objects.filter(name__startswith=name)
+        return queryset
+       
 
 class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
@@ -38,7 +43,7 @@ class TagViewSet(viewsets.ModelViewSet):
 class RecipeViewSet(viewsets.ModelViewSet):
     permission_classes = (ReadOnly | IsAuthor,)
     filter_backends = (DjangoFilterBackend,)
-    filterset_fields = ('tags__slug',)
+    filterset_class = RecipeFilter
     pagination_class = LimitOffsetPagination
     serializer_class = RecipeSerializer
 
