@@ -24,9 +24,8 @@ class TagSerializer(serializers.ModelSerializer):
 
 
 class QuantitySerializer(serializers.ModelSerializer):
-    ingredient = serializers.SlugRelatedField(
-        queryset = Ingredient.objects.all(),
-        slug_field = 'name'
+    ingredient = serializers.PrimaryKeyRelatedField(
+        queryset = Ingredient.objects.all()
     )
 
     class Meta:
