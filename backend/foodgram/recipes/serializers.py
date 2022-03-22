@@ -25,12 +25,35 @@ class TagSerializer(serializers.ModelSerializer):
 
 class QuantitySerializer(serializers.ModelSerializer):
     id = serializers.PrimaryKeyRelatedField(
-        queryset = Ingredient.objects.all()
+        queryset=Ingredient.objects.all(),
+        source='ingredient'
     )
-
+    
     class Meta:
         model = Quantity
         fields = ('id', 'amount')
+
+#class QuantitySerializer(serializers.ModelSerializer):
+#    id = serializers.SlugRelatedField(
+#        source='ingredient',
+#        queryset=Ingredient.objects.all(),
+#        slug_field='id'
+#    )
+#    
+#    class Meta:
+#        model = Quantity
+#        fields = ('id', 'amount')
+
+#class QuantitySerializer(serializers.Serializer):
+#    id = serializers.IntegerField
+#    amount = serializers.DecimalField
+#
+#    def to_representation(self, instance):
+#        return {
+#            'id': instance.ingredient.id, 
+#            'amount': instance.amount
+#        }
+
 
 
 class B64ToFile(serializers.Field):
@@ -115,27 +138,34 @@ class RecipeSerializer(serializers.ModelSerializer):
         ).exists()
 
     def create_ingredients(self, recipe, ingredients):
+        #print(ingredients)
         for ingredient in ingredients:
+            #print('печать')
+            #print(ingredient)
+            #print(ingredient.get('ingredient'))
             Quantity.objects.create(
                 recipe=recipe,
                 amount=ingredient['amount'],
-                ingredient=Ingredient.objects.get(id=ingredient['id'])
+                ingredient=Ingredient.objects.get(name=ingredient['ingredient'])
             )
         return recipe
 
     def create(self, initial_data):
+        #print("данные", initial_data)
         ingredients = initial_data.pop('ingredients')
+        #print(ingredients)
         tags = initial_data.pop('tags')
         recipe = Recipe.objects.create(**initial_data)
         recipe.tags.set(tags)
-        self.create_ingredients(recipe, ingredients)
+        if ingredients:
+            self.create_ingredients(recipe, ingredients)
         return recipe
 
-    def update(self, obj, initial_data):
-        if 'ingredients' in initial_data:
-            ingredients = initial_data.pop('ingredients')
-            tags = initial_data.pop('tags')
-            for attr, value in initial_data.items():
+    def update(self, obj, validated_data):
+        if 'ingredients' in validated_data:
+            ingredients = validated_data.pop('ingredients')
+            tags = validated_data.pop('tags')
+            for attr, value in validated_data.items():
                 setattr(obj, attr, value)
             obj.tags.set(tags)
             obj.save()

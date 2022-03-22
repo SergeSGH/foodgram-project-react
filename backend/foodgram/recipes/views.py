@@ -63,6 +63,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
         serializer.save(
             author=self.request.user
         )
+        return Response(
+            data=serializer.data,
+            status=status.HTTP_200_OK
+        )
+
 
     def perform_partial_update(self, obj, serializer):
         serializer = serializer(
