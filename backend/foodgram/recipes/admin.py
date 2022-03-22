@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Ingredient, Recipe, Tag
+from .models import Ingredient, Quantity, Recipe, RecipeTag, Tag
 
 
 class IngredientAdmin(admin.ModelAdmin):
@@ -9,33 +9,10 @@ class IngredientAdmin(admin.ModelAdmin):
         'name',
         'measurement_unit',
     )
+    list_filter = ('measurement_unit',)
     search_fields = (
         'name',
     )
-
-class RecipeAdmin(admin.ModelAdmin):
-    list_display = (
-
-        'id',
-        'name',
-        'author',
-        'text',
-        'image',
-        'cooking_time',
-    )
-    search_fields = (
-        'name',
-        'author',
-        'tag',
-    )
-    #list_editable = (
-    #    'name',
-    #    'author',
-    #    'text',
-    #    'image',
-    #    'cooking_time',
-    #)
-    empty_value_display = '--empty--'
 
 
 class TagAdmin(admin.ModelAdmin):
@@ -44,25 +21,48 @@ class TagAdmin(admin.ModelAdmin):
         'slug',
         'color',
     )
-    search_fields = (
+    filter_fields = (
         'name',
         'slug',
         'color',
     )
-    #list_editable = (
-    #    'name',
-    #    'slug',
-    #    'color',
-    #)
     empty_value_display = '--empty--'
 
 
-    def genre_display(self, object):
-        return object.genre
+class QuantityInline(admin.StackedInline):
+    model = Quantity
+    extra = 0
 
-    genre_display.empty_value_display = '--empty--'
+
+class TagInline(admin.StackedInline):
+    model = RecipeTag
+    extra = 0
 
 
-admin.site.register(Ingredient, IngredientAdmin)
+class RecipeAdmin(admin.ModelAdmin):
+
+    def favorite_count(self, obj):
+        return obj.favorited.all().count()
+
+    favorite_count.short_description = 'Добавлено в избранное'
+
+    inlines = [QuantityInline, TagInline]
+    list_display = (
+        'id',
+        'author',
+        'name',
+        'cooking_time',
+        'image',
+        'favorite_count'
+    )
+    search_fields = (
+        'name',
+        'author'
+    )
+    ordering = ('id',)
+    empty_value_display = '--empty--'
+
+
 admin.site.register(Recipe, RecipeAdmin)
+admin.site.register(Ingredient, IngredientAdmin)
 admin.site.register(Tag, TagAdmin)

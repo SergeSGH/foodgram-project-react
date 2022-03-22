@@ -1,9 +1,8 @@
-from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-from recipes.models import Follow
-
+from subscriptions.models import Follow
 from .models import User
+
 
 class SetPassSerializer(serializers.Serializer):
     current_password = serializers.CharField(required=True)
@@ -27,15 +26,14 @@ class UserSerializer(serializers.ModelSerializer):
         )
 
     def get_is_subscribed(self, obj):
-        request=self.context.get('request')
+        request = self.context.get('request')
         if request.user.is_authenticated:
             if Follow.objects.filter(user=request.user).filter(
                 author=obj
             ).exists():
                 return True
-        return False 
+        return False
 
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
         return user
-

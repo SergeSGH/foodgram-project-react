@@ -1,17 +1,6 @@
-from django.urls import include, path
-#from rest_framework.routers import DefaultRouter
-#from .routers import SubscriptionsRouter
+from django.urls import path
 
-from recipes.views import SubscriptionViewSet
-
-#router = SubscriptionsRouter()
-#router = DefaultRouter()
-#router.register('users/subscriptions', SubscriptionViewSet, basename='subscriptions')
-
-#urlpatterns = (
-#    path('', include(router.urls)),
-#)
-
+from .views import SubscriptionViewSet
 
 urlpatterns = (
     path('users/subscriptions/', SubscriptionViewSet.as_view({'get': 'list'})),

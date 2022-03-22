@@ -1,11 +1,10 @@
-from django.core.management.base import BaseCommand
 import pandas as pd
-
 from django.apps import apps
+from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
-    help = 'Импорт данных из файл .csv в модель. \
+    help = 'Импорт данных из файла .csv в модель. \
         Ввод аргументов в формате: model fields_number field_names'
 
     def add_arguments(self, parser):
@@ -26,12 +25,12 @@ class Command(BaseCommand):
                 list_last_rows = df.to_dict('records')
                 list_first_row = {}
                 for key in list_last_rows[0].keys():
-                    list_first_row[key]=key
+                    list_first_row[key] = key
                 record_list = [list_first_row]
-                record_list +=list_last_rows
-                dict = []               
+                record_list += list_last_rows
+                dict = []
                 for record in record_list:
-                    new_record={}
+                    new_record = {}
                     field_n = 0
                     for key in list_last_rows[0].keys():
                         new_record[fields[field_n]] = record[key]

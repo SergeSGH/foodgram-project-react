@@ -1,8 +1,6 @@
-from django.contrib.auth import get_user_model
 from django.db import models
 
-
-User = get_user_model()
+from users.models import User
 
 
 class Ingredient(models.Model):
@@ -10,7 +8,6 @@ class Ingredient(models.Model):
         'Ингредиент',
         help_text='Ингредиент',
         max_length=200
-        # primary_key=True,
     )
     measurement_unit = models.CharField(
         'Единица измерения',
@@ -25,6 +22,7 @@ class Ingredient(models.Model):
             name='unique_ingredient',
             fields=['name', 'measurement_unit']
         )
+        ordering = ('id',)
 
     def __str__(self):
         return self.name
@@ -101,6 +99,7 @@ class Recipe(models.Model):
     def __str__(self):
         return self.name
 
+
 class RecipeTag(models.Model):
     recipe = models.ForeignKey(
         Recipe,
@@ -114,6 +113,8 @@ class RecipeTag(models.Model):
     )
 
     class Meta:
+        verbose_name = 'Тэг рецепта'
+        verbose_name_plural = 'Тэги рецепта'
         constraints = (models.UniqueConstraint(
             name='unique_recipetag',
             fields=('recipe', 'tag')
@@ -121,7 +122,6 @@ class RecipeTag(models.Model):
 
     def __str__(self):
         return f'{self.recipe} {self.tag}'
-
 
 
 class Quantity(models.Model):
@@ -140,126 +140,21 @@ class Quantity(models.Model):
         verbose_name='Ингредиент',
         help_text='Ингредиент'
     )
-    quantity = models.DecimalField(
+    amount = models.DecimalField(
         'Количество',
         decimal_places=1,
         max_digits=4,
         help_text='Количество'
     )
-    name = models.CharField(
-        'Ингредиент',
-        help_text='Ингредиент',
-        max_length=200
-    )
-    measurement_unit = models.CharField(
-        'Единица измерения',
-        help_text='Единица измерения',
-        max_length=10
-    )
 
 
     class Meta:
-        verbose_name = 'Количество'
-        verbose_name_plural = 'Количества'
+        verbose_name = 'Ингредиент рецепта'
+        verbose_name_plural = 'Ингредиент рецепта'
         constraints = [models.UniqueConstraint(
             name='unique_q',
             fields=['recipe', 'ingredient'],
         )]
 
-    #@property
-    #def name(self):
-    #    return self.ingredient.name
-
-    #@property
-    #def measurement_unit(self):
-    #    return self.ingredient.measurement_unit
-
     def __str__(self):
         return f'{self.recipe} {self.ingredient}'
-
-
-class IsFavorite(models.Model):
-
-    user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='favorite',
-        verbose_name='Пользователь',
-        help_text='Пользователь'
-    )
-    recipe = models.ForeignKey(
-        Recipe,
-        on_delete=models.CASCADE,
-        related_name='favorited',
-        verbose_name='Избранный рецепт',
-        help_text='Избранный рецепт'
-    )
-
-    class Meta:
-        verbose_name = 'Избранное'
-        verbose_name_plural = 'Избранные'
-        constraints = [models.UniqueConstraint(
-            name='unique_fav',
-            fields=['user', 'recipe'],
-        )]
-
-    def __str__(self):
-        return f'fav: {self.user} {self.recipe}'
-
-
-class Follow(models.Model):
-
-    user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='follows',
-        verbose_name='Подписчик',
-        help_text='Подписчик'
-    )
-    author = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='followers',
-        verbose_name='Автор подписки',
-        help_text='Автор подписки'
-    )
-
-    class Meta:
-        verbose_name = 'Подписка'
-        verbose_name_plural = 'Подписки'
-        constraints = [models.UniqueConstraint(
-            name='unique_follow',
-            fields=['author', 'user'],
-        )]
-
-    def __str__(self):
-        return f'follow: {self.user} {self.author}'
-
-
-class IsInBasket(models.Model):
-
-    user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='basket',
-        verbose_name='Пользователь корзины',
-        help_text='Пользователь корзины'
-    )
-    recipe = models.ForeignKey(
-        Recipe,
-        on_delete=models.CASCADE,
-        related_name='basket',
-        verbose_name='Рецепт в корзине',
-        help_text='Рецепт в корзине'
-    )
-
-    class Meta:
-        verbose_name = 'Рецепт в корзине'
-        verbose_name_plural = 'Рецепты в корзине'
-        constraints = [models.UniqueConstraint(
-            name='unique_basket',
-            fields=['user', 'recipe'],
-        )]
-
-    def __str__(self):
-        return f'basket: {self.user} {self.recipe}'
