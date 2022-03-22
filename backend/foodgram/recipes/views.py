@@ -116,7 +116,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         buffer = io.BytesIO()
         p = canvas.Canvas(buffer)
         pdfmetrics.registerFont(TTFont(
-            'FontPDF', f'- {settings.STATIC_URL}journal-italic-cyrillic.ttf')
+            'FontPDF', f'{settings.STATIC_ROOT}journal-italic-cyrillic.ttf')
         )
         p.setFont('FontPDF', 10)
         counter = itertools.count(650, -30)

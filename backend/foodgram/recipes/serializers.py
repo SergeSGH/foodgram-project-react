@@ -24,13 +24,13 @@ class TagSerializer(serializers.ModelSerializer):
 
 
 class QuantitySerializer(serializers.ModelSerializer):
-    ingredient = serializers.PrimaryKeyRelatedField(
+    id = serializers.PrimaryKeyRelatedField(
         queryset = Ingredient.objects.all()
     )
 
     class Meta:
         model = Quantity
-        fields = ('ingredient', 'amount')
+        fields = ('id', 'amount')
 
 
 class B64ToFile(serializers.Field):
@@ -119,10 +119,9 @@ class RecipeSerializer(serializers.ModelSerializer):
             Quantity.objects.create(
                 recipe=recipe,
                 amount=ingredient['amount'],
-                ingredient=Ingredient.objects.filter(name=ingredient['ingredient'])[0]
+                ingredient=Ingredient.objects.get(id=ingredient['id'])
             )
         return recipe
-
 
     def create(self, initial_data):
         ingredients = initial_data.pop('ingredients')
