@@ -92,17 +92,20 @@ class B64ToFile(serializers.Field):
             if data_type == 'data:image' and encoding == 'base64':
                 i = 0
                 while os.path.exists(
-                    #settings.MEDIA_ROOT + 
+                    'backend_media/' + 
+                    'recipes/' +
                     f'recipe_pic_{i}.{ext}'
                 ):
                     i += 1
                 with open(
-                    #settings.MEDIA_ROOT +
+                    'backend_media/' +
+                    'recipes/' +
                     f'recipe_pic_{i}.{ext}', "wb"
                 ) as fh:
                     fh.write(base64.decodebytes(image_data))
                 return (
-                #    settings.MEDIA_ROOT +
+                    'backend_media/' +
+                    'recipes/' +
                     f'recipe_pic_{i}.{ext}'
                 )
             raise serializers.ValidationError('Некорректный формат данных')
@@ -253,14 +256,17 @@ class RecipeOutputSerializer(serializers.ModelSerializer):
         #read_only_field = ('id', 'author')
 
     def get_is_favorited(self, obj):
-        return IsFavorite.objects.filter(
-            user=self.context['request'].user,
-            recipe=obj
-        ).exists()
+        user = self.context['request'].user
+        if user.is_authenticated:
+            return IsFavorite.objects.filter(
+                user=user, recipe=obj
+            ).exists()
+        return False
 
     def get_is_in_shopping_cart(self, obj):
-        return IsInBasket.objects.filter(
-            user=self.context['request'].user,
-            recipe=obj
-        ).exists()
-
+        user = self.context['request'].user
+        if user.is_authenticated:
+            return IsInBasket.objects.filter(
+                user=user, recipe=obj
+            ).exists()
+        return False
