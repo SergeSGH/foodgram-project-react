@@ -12,4 +12,4 @@ class RecipeFilter(rest_framework.FilterSet):
 
     class Meta:
         model = Recipe
-        fields = ('tags','author__username')
+        fields = ('tags','author__id')

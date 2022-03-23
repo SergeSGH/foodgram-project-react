@@ -201,12 +201,13 @@ class RecipeInputSerializer(serializers.ModelSerializer):
             )
         return recipe
 
-    def create(self, initial_data):
+    def create(self, vaidated_data):
         #print("данные", initial_data)
-        ingredients = initial_data.pop('ingredients')
+        ingredients = vaidated_data.pop('ingredients')
+        image = vaidated_data.pop('image')
         #print(ingredients)
-        tags = initial_data.pop('tags')
-        recipe = Recipe.objects.create(**initial_data)
+        tags = vaidated_data.pop('tags')
+        recipe = Recipe.objects.create(image=image, **vaidated_data)
         recipe.tags.set(tags)
         if ingredients:
             self.create_ingredients(recipe, ingredients)

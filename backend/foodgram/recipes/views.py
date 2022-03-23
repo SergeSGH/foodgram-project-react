@@ -41,14 +41,16 @@ class TagViewSet(viewsets.ModelViewSet):
     serializer_class = TagSerializer
     permission_classes = (ReadOnly,)
     pagination_class = None
+    
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
     permission_classes = (ReadOnly | IsAuthor,)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
-    pagination_class = LimitOffsetPagination
+    #pagination_class = LimitOffsetPagination
     #serializer_class = RecipeInputSerializer
+    #queryset = Recipe.objects.all()
 
     def get_serializer_class(self):
         if self.request.method == 'POST' or self.request.method == 'PATCH':
