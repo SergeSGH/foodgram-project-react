@@ -18,19 +18,22 @@ from subscriptions.models import IsFavorite, IsInBasket, Recipe
 from users.permissions import IsAuthor, ReadOnly
 from .filters import RecipeFilter
 from .models import Ingredient, Tag
-from .serializers import (IngredientSerializer, RecipeSerializer,
-                          RecipeSerializerShort, TagSerializer)
+from .serializers import (IngredientSerializer, RecipeInputSerializer,
+                            RecipeOutputSerializer, RecipeSerializerShort,
+                            TagSerializer)
 
 
 class IngredientViewSet(viewsets.ModelViewSet):
+    queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     permission_classes = (ReadOnly,)
     pagination_class = None
 
     def get_queryset(self):
         name = self.request.query_params.get('name')
-        queryset = Ingredient.objects.filter(name__startswith=name)
-        return queryset
+        if name:
+            return Ingredient.objects.filter(name__startswith=name)
+        return super().get_queryset()
        
 
 class TagViewSet(viewsets.ModelViewSet):
@@ -45,7 +48,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
     pagination_class = LimitOffsetPagination
-    serializer_class = RecipeSerializer
+    #serializer_class = RecipeInputSerializer
+
+    def get_serializer_class(self):
+        if self.request.method == 'POST' or self.request.method == 'PATCH':
+            return RecipeInputSerializer
+        return RecipeOutputSerializer
+
 
     def get_queryset(self):
         is_favorited = self.request.query_params.get('is_favorited')
@@ -63,6 +72,18 @@ class RecipeViewSet(viewsets.ModelViewSet):
         serializer.save(
             author=self.request.user
         )
+        #tags = serializer.data.pop('tags')
+        #new_tags = []
+        #for tag in tags:
+        #    tag_object = Tag.objects.get(id=tag)
+        #    new_tags.append({
+        #        'id' : getattr(tag_object, 'id'),
+        #        'name' : getattr(tag_object, 'name'),
+        #        'slug' : getattr(tag_object, 'slug'),
+        #        'color' : getattr(tag_object, 'color'),
+        #    })
+        #serializer.data['tags'] = new_tags
+        #print(serializer.data)
         return Response(
             data=serializer.data,
             status=status.HTTP_200_OK
