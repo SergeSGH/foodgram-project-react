@@ -92,14 +92,19 @@ class B64ToFile(serializers.Field):
             if data_type == 'data:image' and encoding == 'base64':
                 i = 0
                 while os.path.exists(
-                    settings.MEDIA_ROOT + f'recipe_pic_{i}.{ext}'
+                    #settings.MEDIA_ROOT + 
+                    f'recipe_pic_{i}.{ext}'
                 ):
                     i += 1
                 with open(
-                    settings.MEDIA_ROOT + f'recipe_pic_{i}.{ext}', "wb"
+                    #settings.MEDIA_ROOT +
+                    f'recipe_pic_{i}.{ext}', "wb"
                 ) as fh:
                     fh.write(base64.decodebytes(image_data))
-                return (settings.MEDIA_ROOT + f'recipe_pic_{i}.{ext}')
+                return (
+                #    settings.MEDIA_ROOT +
+                    f'recipe_pic_{i}.{ext}'
+                )
             raise serializers.ValidationError('Некорректный формат данных')
         except ValueError:
             raise serializers.ValidationError(
