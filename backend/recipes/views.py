@@ -101,45 +101,42 @@ class RecipeViewSet(viewsets.ModelViewSet):
         recipe_list_print = []
         for recipe in recipe_list:
             recipe_list_print.append(
-                f'Рецепт: {recipe.name}, автор: {recipe.author.username}'
+                f'Рецепт: {recipe.name}, автор: {recipe.author.first_name} {recipe.author.last_name}'
             )
         ingredients_quantity = {}
         for recipe in recipe_list:
             for ingredient in recipe.ingredients.all():
-                full_ingredient = (
-                    ingredient.name + '|' + ingredient.measurement_unit
-                )
-                if full_ingredient in ingredients_quantity:
-                    ingredients_quantity[full_ingredient] += \
-                        ingredient.quantity
+                ingredient_name = ingredient.ingredient.name
+                if ingredient_name in ingredients_quantity:
+                    ingredients_quantity[ingredient_name] += \
+                        ingredient.amount
                 else:
-                    ingredients_quantity[full_ingredient] = \
-                        ingredient.quantity
+                    ingredients_quantity[ingredient_name] = \
+                        ingredient.amount
         ingredient_list_print = []
         sorted_ingredients_list = sorted(ingredients_quantity)
         for ingredient in sorted_ingredients_list:
-            ingr_name = ingredient[:ingredient.find('|')]
-            ingr_mu = ingredient[ingredient.find('|') + 1:]
+            ingr_mu = getattr(Ingredient.objects.get(name=ingredient), 'measurement_unit')
             ingredient_list_print.append(
-                f'{ingr_name} ({ingr_mu}) - {ingredients_quantity[ingredient]}'
+                f'{ingredient} ({ingr_mu}) - {ingredients_quantity[ingredient]}'
             )
         buffer = io.BytesIO()
         p = canvas.Canvas(buffer)
         pdfmetrics.registerFont(TTFont(
-            'FontPDF', f'{settings.STATIC_ROOT}journal-italic-cyrillic.ttf')
+            'FontPDF', f'{settings.STATIC_ROOT}\journal-italic-cyrillic.ttf')
         )
         p.setFont('FontPDF', 10)
-        counter = itertools.count(650, -30)
+        counter = itertools.count(800, -30)
         height = next(counter)
         p.drawString(20, height, "Список рецептов")
         for recipe in recipe_list_print:
             height = next(counter)
-            p.drawString(20, height, str(recipe))
+            p.drawString(40, height, str(recipe))
         height = next(counter)
         p.drawString(20, height, "Список покупок")
         for ingredient in ingredient_list_print:
             height = next(counter)
-            p.drawString(20, height, ingredient)
+            p.drawString(40, height, ingredient)
         height = next(counter)
         p.drawString(20, height, "Приложение Foodgram")
         p.showPage()
