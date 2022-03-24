@@ -11,7 +11,7 @@ from reportlab.pdfgen import canvas
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 
 from subscriptions.models import IsFavorite, IsInBasket, Recipe
@@ -43,9 +43,8 @@ class TagViewSet(viewsets.ModelViewSet):
     pagination_class = None
     
 
-
 class RecipeViewSet(viewsets.ModelViewSet):
-    permission_classes = (ReadOnly | IsAuthor,)
+    permission_classes = (ReadOnly | IsAuthor, IsAuthenticatedOrReadOnly,)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
     #pagination_class = LimitOffsetPagination
@@ -56,7 +55,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if self.request.method == 'POST' or self.request.method == 'PATCH':
             return RecipeInputSerializer
         return RecipeOutputSerializer
-
 
     def get_queryset(self):
         is_favorited = self.request.query_params.get('is_favorited')
@@ -71,9 +69,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return queryset
 
     def perform_create(self, serializer):
-        serializer.save(
-            author=self.request.user
-        )
+        if self.request.user.is_authenticated:
+            serializer.save(
+                author=self.request.user
+            )
         #tags = serializer.data.pop('tags')
         #new_tags = []
         #for tag in tags:
@@ -86,27 +85,31 @@ class RecipeViewSet(viewsets.ModelViewSet):
         #    })
         #serializer.data['tags'] = new_tags
         #print(serializer.data)
-        return Response(
-            data=serializer.data,
-            status=status.HTTP_200_OK
-        )
-
-
-    def perform_partial_update(self, obj, serializer):
-        serializer = serializer(
-            obj, data=self.request.data, partial=True
-        )
-        if serializer.is_valid:
-            serializer.save()
             return Response(
                 data=serializer.data,
                 status=status.HTTP_200_OK
             )
-        else:
-            return Response(
-                data=serializer.errors,
-                status=status.HTTP_400_BAD_REQUEST
+        return Response(
+            'Пользователь не авторизован',
+            status=status.HTTP_403_FORBIDDEN
+        )
+
+    def perform_partial_update(self, obj, serializer):
+        if self.request.user.is_authenticated:
+            serializer = serializer(
+                obj, data=self.request.data, partial=True
             )
+            if serializer.is_valid:
+                serializer.save()
+                return Response(
+                    data=serializer.data,
+                    status=status.HTTP_200_OK
+                )
+            else:
+                return Response(
+                    data=serializer.errors,
+                    status=status.HTTP_400_BAD_REQUEST
+                )
 
     @action(
         detail=False,

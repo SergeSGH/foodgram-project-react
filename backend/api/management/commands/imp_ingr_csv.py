@@ -21,7 +21,7 @@ class Command(BaseCommand):
         }
         for name in names:
             try:
-                df = pd.read_csv(f'../../data/{name}.csv')
+                df = pd.read_csv(f'../data/{name}.csv')
                 list_last_rows = df.to_dict('records')
                 list_first_row = {}
                 for key in list_last_rows[0].keys():

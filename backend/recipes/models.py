@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.translation import gettext_lazy
 
 from users.models import User
 
@@ -29,22 +30,33 @@ class Ingredient(models.Model):
 
 
 class Tag(models.Model):
+
+    class Color(models.TextChoices):
+        LIME = "#00FF00", gettext_lazy("Лимонный")
+        DARKVIOLET = "#9400D3", gettext_lazy("Темно-фиолетовый")
+        GREEN = "#008000", gettext_lazy("Зеленый")
+        BLUE = "#00BFFF", gettext_lazy("Голубой")
+
     name = models.CharField(
         'Тэг',
         help_text='Тэг',
         max_length=20,
-        unique=True
+        unique=True,
+        blank=False
     )
     slug = models.SlugField(
         'Слаг тэга',
         help_text='Слаг тэга',
-        unique=True
+        unique=True,
+        blank=False
     )
     color = models.CharField(
         'Цвет',
         help_text='Цвет',
+        choices=Color.choices,
         max_length=7,
-        unique=True
+        unique=True,
+        blank=False
     )
 
     class Meta:
@@ -146,7 +158,6 @@ class Quantity(models.Model):
         max_digits=4,
         help_text='Количество'
     )
-
 
     class Meta:
         verbose_name = 'Ингредиент рецепта'

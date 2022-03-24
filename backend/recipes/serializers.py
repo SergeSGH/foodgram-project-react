@@ -92,19 +92,19 @@ class B64ToFile(serializers.Field):
             if data_type == 'data:image' and encoding == 'base64':
                 i = 0
                 while os.path.exists(
-                    'backend_media/' + 
+                    settings.MEDIA_URL[1:] + 
                     'recipes/' +
                     f'recipe_pic_{i}.{ext}'
                 ):
                     i += 1
                 with open(
-                    'backend_media/' +
+                    settings.MEDIA_URL[1:] +
                     'recipes/' +
                     f'recipe_pic_{i}.{ext}', "wb"
                 ) as fh:
                     fh.write(base64.decodebytes(image_data))
                 return (
-                    'backend_media/' +
+                    settings.MEDIA_URL[1:] +
                     'recipes/' +
                     f'recipe_pic_{i}.{ext}'
                 )
