@@ -1,7 +1,6 @@
 from rest_framework import serializers
 
-from recipes.models import Recipe
-from recipes.serializers import B64ToFile, RecipeSerializerShort
+from recipes.serializers import RecipeSerializerShort
 from users.models import User
 from .models import Follow
 

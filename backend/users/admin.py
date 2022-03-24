@@ -7,7 +7,7 @@ class UserAdmin(admin.ModelAdmin):
 
     def followers_count(self, obj):
         return obj.followers.all().count()
-        
+
     followers_count.short_description = 'Число подписчиков'
 
     list_display = (

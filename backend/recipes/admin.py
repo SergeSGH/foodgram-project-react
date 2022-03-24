@@ -1,8 +1,9 @@
 from django.contrib import admin
-# from django.utils.html import format_html
-# from django.conf import settings
 
 from .models import Ingredient, Quantity, Recipe, RecipeTag, Tag
+
+# from django.utils.html import format_html
+# from django.conf import settings
 
 
 class IngredientAdmin(admin.ModelAdmin):

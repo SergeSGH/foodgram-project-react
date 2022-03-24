@@ -20,7 +20,7 @@ class TagSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Tag
-        fields = ('id','name', 'slug', 'color')
+        fields = ('id', 'name', 'slug', 'color')
         read_only_fields = ('name', 'slug', 'color',)
 
 
@@ -29,7 +29,7 @@ class QuantitySerializer(serializers.ModelSerializer):
         queryset=Ingredient.objects.all(),
         source='ingredient'
     )
-    
+
     class Meta:
         model = Quantity
         fields = ('id', 'amount')
@@ -39,7 +39,7 @@ class QuantityOutputSerializer(serializers.ModelSerializer):
     id = serializers.SerializerMethodField()
     measurement_unit = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
-    
+
     class Meta:
         model = Quantity
         fields = ('id', 'amount', 'measurement_unit', 'name')
@@ -52,29 +52,6 @@ class QuantityOutputSerializer(serializers.ModelSerializer):
 
     def get_name(self, obj):
         return obj.ingredient.name
-
-
-#class QuantitySerializer(serializers.ModelSerializer):
-#    id = serializers.SlugRelatedField(
-#        source='ingredient',
-#        queryset=Ingredient.objects.all(),
-#        slug_field='id'
-#    )
-#    
-#    class Meta:
-#        model = Quantity
-#        fields = ('id', 'amount')
-
-#class QuantitySerializer(serializers.Serializer):
-#    id = serializers.IntegerField
-#    amount = serializers.DecimalField
-#
-#    def to_representation(self, instance):
-#        return {
-#            'id': instance.ingredient.id, 
-#            'amount': instance.amount
-#        }
-
 
 
 class B64ToFile(serializers.Field):
@@ -92,21 +69,21 @@ class B64ToFile(serializers.Field):
             if data_type == 'data:image' and encoding == 'base64':
                 i = 0
                 while os.path.exists(
-                    settings.MEDIA_URL[1:] + 
-                    'recipes/' +
-                    f'recipe_pic_{i}.{ext}'
+                    settings.MEDIA_URL[1:]
+                    + 'recipes/'
+                    + f'recipe_pic_{i}.{ext}'
                 ):
                     i += 1
                 with open(
-                    settings.MEDIA_URL[1:] +
-                    'recipes/' +
-                    f'recipe_pic_{i}.{ext}', "wb"
+                    settings.MEDIA_URL[1:]
+                    + 'recipes/'
+                    + f'recipe_pic_{i}.{ext}', "wb"
                 ) as fh:
                     fh.write(base64.decodebytes(image_data))
                 return (
-                    settings.MEDIA_URL[1:] +
-                    'recipes/' +
-                    f'recipe_pic_{i}.{ext}'
+                    settings.MEDIA_URL[1:]
+                    + 'recipes/'
+                    + f'recipe_pic_{i}.{ext}'
                 )
             raise serializers.ValidationError('Некорректный формат данных')
         except ValueError:
@@ -134,10 +111,10 @@ class TagsField(serializers.Field):
         new_tags = []
         for tag in value:
             new_tags.append({
-                'id' : getattr(tag, 'id'),
-                'name' : getattr(tag, 'name'),
-                'slug' : getattr(tag, 'slug'),
-                'color' : getattr(tag, 'color'),
+                'id': getattr(tag, 'id'),
+                'name': getattr(tag, 'name'),
+                'slug': getattr(tag, 'slug'),
+                'color': getattr(tag, 'color'),
             })
         return new_tags
 
@@ -152,16 +129,13 @@ class TagsField(serializers.Field):
         return recipe_tag_list
 
 
-
 class RecipeInputSerializer(serializers.ModelSerializer):
-    tags = serializers.PrimaryKeyRelatedField(many=True, queryset=Tag.objects.all())
-    #tags = TagsField()
+    tags = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=Tag.objects.all()
+    )
     ingredients = QuantitySerializer(many=True)
     author = UserSerializer(read_only=True)
-    #is_favorited = serializers.SerializerMethodField()
-    #is_in_shopping_cart = serializers.SerializerMethodField()
     image = B64ToFile()
-
 
     class Meta:
         model = Recipe
@@ -170,8 +144,6 @@ class RecipeInputSerializer(serializers.ModelSerializer):
             'tags',
             'author',
             'ingredients',
-        #    'is_favorited',
-        #    'is_in_shopping_cart',
             'name',
             'image',
             'text',
@@ -179,36 +151,20 @@ class RecipeInputSerializer(serializers.ModelSerializer):
         )
         read_only_field = ('id', 'author')
 
-    #def get_is_favorited(self, obj):
-    #    return IsFavorite.objects.filter(
-    #        user=self.context['request'].user,
-    #        recipe=obj
-    #    ).exists()
-
-    #def get_is_in_shopping_cart(self, obj):
-    #    return IsInBasket.objects.filter(
-    #        user=self.context['request'].user,
-    #        recipe=obj
-    #    ).exists()
-
     def create_ingredients(self, recipe, ingredients):
-        #print(ingredients)
         for ingredient in ingredients:
-            #print('печать')
-            #print(ingredient)
-            #print(ingredient.get('ingredient'))
             Quantity.objects.create(
                 recipe=recipe,
                 amount=ingredient['amount'],
-                ingredient=Ingredient.objects.get(name=ingredient['ingredient'])
+                ingredient=Ingredient.objects.get(
+                    name=ingredient['ingredient']
+                )
             )
         return recipe
 
     def create(self, vaidated_data):
-        #print("данные", initial_data)
         ingredients = vaidated_data.pop('ingredients')
         image = vaidated_data.pop('image')
-        #print(ingredients)
         tags = vaidated_data.pop('tags')
         recipe = Recipe.objects.create(image=image, **vaidated_data)
         recipe.tags.set(tags)
@@ -238,7 +194,6 @@ class RecipeOutputSerializer(serializers.ModelSerializer):
     is_in_shopping_cart = serializers.SerializerMethodField()
     image = B64ToFile()
 
-
     class Meta:
         model = Recipe
         fields = (
@@ -253,7 +208,6 @@ class RecipeOutputSerializer(serializers.ModelSerializer):
             'text',
             'cooking_time'
         )
-        #read_only_field = ('id', 'author')
 
     def get_is_favorited(self, obj):
         user = self.context['request'].user

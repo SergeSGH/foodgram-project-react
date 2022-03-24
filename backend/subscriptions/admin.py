@@ -9,7 +9,7 @@ class IsFavoriteAdmin(admin.ModelAdmin):
         'recipe',
     )
     search_fields = ('recipe__name',)
-    filter_fields = ('user__username',)    
+    filter_fields = ('user__username',)
     ordering = ('user',)
     empty_value_display = '--empty--'
 
@@ -34,10 +34,10 @@ class IsInBasketAdmin(admin.ModelAdmin):
         'recipe',
     )
     search_fields = ('recipe__name',)
-    filter_fields = ('user__username',)    
+    filter_fields = ('user__username',)
     ordering = ('user',)
     empty_value_display = '--empty--'
-    
+
 
 admin.site.register(IsFavorite, IsFavoriteAdmin)
 admin.site.register(Follow, FollowAdmin)

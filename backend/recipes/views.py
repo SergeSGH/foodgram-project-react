@@ -10,8 +10,8 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
-from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import (IsAuthenticated,
+                                        IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
 
 from subscriptions.models import IsFavorite, IsInBasket, Recipe
@@ -19,8 +19,8 @@ from users.permissions import IsAuthor, ReadOnly
 from .filters import RecipeFilter
 from .models import Ingredient, Tag
 from .serializers import (IngredientSerializer, RecipeInputSerializer,
-                            RecipeOutputSerializer, RecipeSerializerShort,
-                            TagSerializer)
+                          RecipeOutputSerializer, RecipeSerializerShort,
+                          TagSerializer)
 
 
 class IngredientViewSet(viewsets.ModelViewSet):
@@ -34,22 +34,19 @@ class IngredientViewSet(viewsets.ModelViewSet):
         if name:
             return Ingredient.objects.filter(name__startswith=name)
         return super().get_queryset()
-       
+
 
 class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = (ReadOnly,)
     pagination_class = None
-    
+
 
 class RecipeViewSet(viewsets.ModelViewSet):
     permission_classes = (ReadOnly | IsAuthor, IsAuthenticatedOrReadOnly,)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
-    #pagination_class = LimitOffsetPagination
-    #serializer_class = RecipeInputSerializer
-    #queryset = Recipe.objects.all()
 
     def get_serializer_class(self):
         if self.request.method == 'POST' or self.request.method == 'PATCH':
@@ -69,47 +66,29 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return queryset
 
     def perform_create(self, serializer):
-        if self.request.user.is_authenticated:
-            serializer.save(
-                author=self.request.user
-            )
-        #tags = serializer.data.pop('tags')
-        #new_tags = []
-        #for tag in tags:
-        #    tag_object = Tag.objects.get(id=tag)
-        #    new_tags.append({
-        #        'id' : getattr(tag_object, 'id'),
-        #        'name' : getattr(tag_object, 'name'),
-        #        'slug' : getattr(tag_object, 'slug'),
-        #        'color' : getattr(tag_object, 'color'),
-        #    })
-        #serializer.data['tags'] = new_tags
-        #print(serializer.data)
+        serializer.save(
+            author=self.request.user
+        )
+        return Response(
+            data=serializer.data,
+            status=status.HTTP_200_OK
+        )
+
+    def perform_partial_update(self, obj, serializer):
+        serializer = serializer(
+            obj, data=self.request.data, partial=True
+        )
+        if serializer.is_valid:
+            serializer.save()
             return Response(
                 data=serializer.data,
                 status=status.HTTP_200_OK
             )
-        return Response(
-            'Пользователь не авторизован',
-            status=status.HTTP_403_FORBIDDEN
-        )
-
-    def perform_partial_update(self, obj, serializer):
-        if self.request.user.is_authenticated:
-            serializer = serializer(
-                obj, data=self.request.data, partial=True
+        else:
+            return Response(
+                data=serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST
             )
-            if serializer.is_valid:
-                serializer.save()
-                return Response(
-                    data=serializer.data,
-                    status=status.HTTP_200_OK
-                )
-            else:
-                return Response(
-                    data=serializer.errors,
-                    status=status.HTTP_400_BAD_REQUEST
-                )
 
     @action(
         detail=False,
