@@ -1,7 +1,6 @@
 from django.db import models
 
-from recipes.models import Recipe
-from users.models import User
+from recipes.models import Recipe, User
 
 
 class IsFavorite(models.Model):

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import User
+from recipes.models import User
 
 
 class UserAdmin(admin.ModelAdmin):

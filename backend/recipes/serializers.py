@@ -36,18 +36,20 @@ class QuantityOutputSerializer(serializers.ModelSerializer):
     id = serializers.PrimaryKeyRelatedField(
         source='ingredient', queryset=Ingredient.objects.all()
     )
-    measurement_unit = serializers.SerializerMethodField()
-    name = serializers.SerializerMethodField()
+    name = serializers.SlugRelatedField(
+        source='ingredient',
+        queryset=Ingredient.objects.all(),
+        slug_field='name'
+    )
+    measurement_unit = serializers.SlugRelatedField(
+        source='ingredient',
+        queryset=Ingredient.objects.all(),
+        slug_field='measurement_unit'
+    )
 
     class Meta:
         model = Quantity
         fields = ('id', 'amount', 'measurement_unit', 'name')
-
-    def get_measurement_unit(self, obj):
-        return obj.ingredient.measurement_unit
-
-    def get_name(self, obj):
-        return obj.ingredient.name
 
 
 class RecipeSerializerShort(serializers.ModelSerializer):

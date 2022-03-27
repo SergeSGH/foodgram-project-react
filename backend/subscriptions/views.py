@@ -2,7 +2,7 @@ from rest_framework import mixins, viewsets
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticated
 
-from users.models import User
+from recipes.models import User
 from users.permissions import IsOwner
 from .serializers import SubscriptionSerializer
 

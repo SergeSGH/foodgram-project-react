@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
+from recipes.models import User
 from subscriptions.models import Follow
-from .models import User
 
 
 class SetPassSerializer(serializers.Serializer):

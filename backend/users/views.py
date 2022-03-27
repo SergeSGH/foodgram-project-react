@@ -4,9 +4,9 @@ from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
+from recipes.models import User
 from subscriptions.models import Follow
 from subscriptions.serializers import SubscriptionSerializer
-from .models import User
 from .serializers import SetPassSerializer, UserSerializer
 
 

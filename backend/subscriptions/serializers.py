@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
+from recipes.models import User
 from recipes.serializers import RecipeSerializerShort
-from users.models import User
 from .models import Follow
 
 

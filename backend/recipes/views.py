@@ -16,7 +16,6 @@ from rest_framework.permissions import (IsAuthenticated,
 from rest_framework.response import Response
 
 from subscriptions.models import IsFavorite, IsInBasket, Recipe
-from users.models import User
 from users.permissions import IsAuthor, ReadOnly
 from .filters import IngredientFilter, RecipeFilter
 from .models import Ingredient, Tag
@@ -82,19 +81,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
         )
         p.setFont('FontPDF', 10)
         counter = itertools.count(800, -30)
-        height = next(counter)
-        p.drawString(20, height, "Список рецептов:")
-
-        counter_n = itertools.count(1, 1)
-        for recipe in recipe_list.values('name', 'author'):
-            height = next(counter)
-            n = next(counter_n)
-            recipe_name = recipe['name']
-            author = User.objects.get(id=recipe['author'])
-            first_name = author.first_name
-            last_name = author.last_name
-            p.drawString(40, height, f'{n}. Рецепт: {recipe_name}, автор: '
-                         + f'{first_name} {last_name}')
 
         height = next(counter)
         p.drawString(20, height, "Список покупок:")

@@ -1,1 +1,0 @@
-SECRET_KEY = '($ht@5piubfk(=4z_e*(w!3q+e=o)xdsxohw9mfwn@epe!iiud'
