@@ -13,7 +13,7 @@ class Ingredient(models.Model):
     measurement_unit = models.CharField(
         'Единица измерения',
         help_text='Единица измерения',
-        max_length=10
+        max_length=50
     )
 
     class Meta:

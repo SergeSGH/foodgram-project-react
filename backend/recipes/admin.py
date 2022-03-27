@@ -72,8 +72,7 @@ class RecipeAdmin(admin.ModelAdmin):
     # пока не настроено
     # def image_change_preview(self, obj):
     #     if obj.image:
-    #         url = obj.image.url
-    #         print('change', url)
+    #         url = 'http://localhost' + obj.image.url
     #         return format_html(
     #             '<img scr="{}" width="600" height="300" style="'
     #             "border: 2px solid grey;"
@@ -85,8 +84,7 @@ class RecipeAdmin(admin.ModelAdmin):
 
     # def image_list_preview(self, obj):
     #     if obj.image:
-    #         url = obj.image.url[len(settings.MEDIA_URL)*2-2:]
-    #         print('preview', url,type(url))
+    #         url = 'http://localhost' + obj.image.url
     #         return format_html(
     #             '<img scr="{}" width="100" height="50" style="'
     #             "border: 1px solid grey;"

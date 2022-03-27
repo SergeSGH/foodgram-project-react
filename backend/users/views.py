@@ -48,20 +48,16 @@ class UserViewSet(viewsets.ModelViewSet):
     def set_password(self, request):
         serializer = SetPassSerializer(data=request.data)
         user = request.user
-        if serializer.is_valid():
-            if user.check_password(request.data.get('current_password')):
-                user.set_password(request.data.get('new_password'))
-                user.save()
-                return Response(
-                    data=serializer.data, status=status.HTTP_200_OK
-                )
-            else:
-                return Response(
-                    'некорректный пароль', status=status.HTTP_400_BAD_REQUEST
-                )
+        serializer.is_valid(raise_exception=True)
+        if user.check_password(request.data.get('current_password')):
+            user.set_password(request.data.get('new_password'))
+            user.save()
+            return Response(
+                data=serializer.data, status=status.HTTP_200_OK
+            )
         else:
             return Response(
-                'некорректные данные', status=status.HTTP_400_BAD_REQUEST
+                'некорректный пароль', status=status.HTTP_400_BAD_REQUEST
             )
 
     @action(
