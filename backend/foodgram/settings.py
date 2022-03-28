@@ -26,7 +26,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = str(os.getenv('SECRET_KEY'))
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -60,10 +60,11 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'foodgram.urls'
 
+TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [TEMPLATES_DIR],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -131,9 +132,10 @@ USE_TZ = True
 
 STATIC_URL = '/backend_static/'
 
-# STATICFILES_DIRS = (
-#     os.path.join(BASE_DIR, 'backend_docs/'),
-# )
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'docs'),
+    os.path.join(BASE_DIR, 'fonts'),
+)
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'backend_static')
 

@@ -2,9 +2,6 @@ from django.contrib import admin
 
 from .models import Ingredient, Quantity, Recipe, RecipeTag, Tag
 
-# from django.utils.html import format_html
-# from django.conf import settings
-
 
 class IngredientAdmin(admin.ModelAdmin):
     list_display = (
@@ -56,7 +53,6 @@ class RecipeAdmin(admin.ModelAdmin):
         'name',
         'cooking_time',
         'image',
-        # 'image_list_preview',
         'favorite_count'
     )
     search_fields = (
@@ -67,32 +63,6 @@ class RecipeAdmin(admin.ModelAdmin):
     list_filter = ('tags',)
     filter_horizontal = ('tags',)
     empty_value_display = '--empty--'
-    # read_only_fields = ('image_change_preview',)
-
-    # пока не настроено
-    # def image_change_preview(self, obj):
-    #     if obj.image:
-    #         url = 'http://localhost' + obj.image.url
-    #         return format_html(
-    #             '<img scr="{}" width="600" height="300" style="'
-    #             "border: 2px solid grey;"
-    #             'border-radius:50px;" />'.format(url)
-    #         )
-    #     return "Превью"
-
-    # image_change_preview.short_description = "Превью"
-
-    # def image_list_preview(self, obj):
-    #     if obj.image:
-    #         url = 'http://localhost' + obj.image.url
-    #         return format_html(
-    #             '<img scr="{}" width="100" height="50" style="'
-    #             "border: 1px solid grey;"
-    #             'border-radius:10px;" />',format(url)
-    #         )
-    #     return "Картинка"
-
-    # image_list_preview.short_description = "Картинка"
 
 
 admin.site.register(Recipe, RecipeAdmin)

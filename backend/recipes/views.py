@@ -1,7 +1,6 @@
 import io
 import itertools
 
-from django.conf import settings
 from django.db.models import Sum
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
@@ -76,8 +75,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         buffer = io.BytesIO()
         p = canvas.Canvas(buffer)
         pdfmetrics.registerFont(TTFont(
-            'FontPDF', f'{settings.STATIC_ROOT}/'
-            + 'journal-italic-cyrillic.ttf')
+            'FontPDF', 'journal-italic-cyrillic.ttf')
         )
         p.setFont('FontPDF', 10)
         counter = itertools.count(800, -30)

@@ -8,7 +8,6 @@ pytest-django==4.4.0
 pytest-pythonpath==0.7.3
 django-filter==21.1
 reportlab==3.6.8
-pandas==1.3.5
 djoser==2.1.0
 DjangoHexadecimalField==0.0.2
 gunicorn==20.0.4
