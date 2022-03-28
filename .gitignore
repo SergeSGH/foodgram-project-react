@@ -131,6 +131,5 @@ dmypy.json
 # .idea
 .idea
 
-backend_media
-backend_static
-secrets
+dump
+dump1
