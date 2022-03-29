@@ -34,7 +34,6 @@ jobs:
       ', github.ref)
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v2 
         run: |
             docker build /backend
       - name: Set up Docker Buildx
