@@ -15,7 +15,7 @@ services:
       - ./.env
 
   web:
-    image: ssprihodko/foodgram:v5
+    image: ssprihodko/foodgram:latest
     restart: always
     volumes:
       - foodgram_static:/app/backend_static/
