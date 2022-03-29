@@ -1,4 +1,4 @@
-![foodgram forkflow status](https://github.com/SergeSGH/foodgram-project-react/workflows/foodgram_workflow/badge.svg)
+![foodgram_forkflow_status](https://github.com/SergeSGH/foodgram-project-react/workflows/foodgram_workflow/badge.svg)
 # foodgram
 ### Описание:
 проект для записи своих любимых рецептов с картинками
