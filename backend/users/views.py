@@ -70,11 +70,6 @@ class UserViewSet(viewsets.ModelViewSet):
     )
     def subscribe(self, request, **kwargs):
         author = get_object_or_404(User, pk=self.kwargs.get('pk'))
-        recipes_limit = self.request.query_params.get('recipes_limit')
-        serializer = SubscriptionSerializer(
-            author,
-            context={'request': request, 'recipes_limit': recipes_limit}
-        )
         if request.method == 'POST':
             if Follow.objects.filter(
                 author=author,
