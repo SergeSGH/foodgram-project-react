@@ -9,7 +9,6 @@ from .serializers import SubscriptionSerializer
 
 class SubscriptionViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     permission_classes = (IsAuthenticated, IsOwner)
-    pagination_class = LimitOffsetPagination
     serializer_class = SubscriptionSerializer
 
     def get_queryset(self):
