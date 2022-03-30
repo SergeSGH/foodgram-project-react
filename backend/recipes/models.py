@@ -156,7 +156,7 @@ class Quantity(models.Model):
     amount = models.DecimalField(
         'Количество',
         decimal_places=1,
-        max_digits=4,
+        max_digits=5,
         help_text='Количество'
     )
 
