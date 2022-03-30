@@ -73,6 +73,9 @@ class RecipeInputSerializer(serializers.ModelSerializer):
     ingredients = QuantitySerializer(many=True)
     author = UserSerializer(read_only=True)
     image = Base64ImageField()
+    owner = serializers.PrimaryKeyRelatedField(
+        read_only=True, default=serializers.CurrentUserDefault()
+    )
 
     class Meta:
         model = Recipe
