@@ -92,10 +92,18 @@ class RecipeInputSerializer(serializers.ModelSerializer):
         read_only_field = ('id', 'author')
         validators = [
             UniqueTogetherValidator(
+                message='У одного автора не может быть одинаковых рецептов!',
                 queryset=Recipe.objects.all(),
                 fields=('name', 'author')
             )
         ]
+
+    def validate_cooking_time(self, value):
+        if value < 0:
+            raise serializers.ValidationError(
+                'Время приготовления не может быть отрицательным!'
+            )
+        return value
 
     def create_ingredients(self, recipe, ingredients):
         for ingredient in ingredients:
