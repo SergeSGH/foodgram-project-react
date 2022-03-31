@@ -13,12 +13,12 @@ from rest_framework.decorators import action
 from rest_framework.permissions import (IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
-from .pagination import RecipesPagination
 
 from subscriptions.models import IsFavorite, IsInBasket, Recipe
 from users.permissions import IsAuthor, ReadOnly
 from .filters import IngredientFilter, RecipeFilter
 from .models import Ingredient, Tag
+from .pagination import RecipesPagination
 from .serializers import (IngredientSerializer, RecipeInputSerializer,
                           RecipeOutputSerializer, RecipeSerializerShort,
                           TagSerializer)
