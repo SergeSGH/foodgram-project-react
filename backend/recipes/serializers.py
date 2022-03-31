@@ -98,7 +98,18 @@ class RecipeInputSerializer(serializers.ModelSerializer):
         ]
 
     def create_ingredients(self, recipe, ingredients):
+        ingredient_names = set()
         for ingredient in ingredients:
+            name = ingredient['ingredient']
+            print(name, ingredients)
+            if name in ingredient_names:
+                raise serializers.ValidationError(
+                    'Не могут быть одинаковые ингредиенты для одного рецепта!'
+                )
+            if ingredient['amount'] < 0:
+                raise serializers.ValidationError(
+                    'Количество ингредиента не может быть отрицательным!'
+                )
             Quantity.objects.create(
                 recipe=recipe,
                 amount=ingredient['amount'],
@@ -106,6 +117,7 @@ class RecipeInputSerializer(serializers.ModelSerializer):
                     name=ingredient['ingredient']
                 )
             )
+            ingredient_names.add(name)
         return recipe
 
     def create(self, vaidated_data):

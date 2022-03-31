@@ -13,6 +13,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import (IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
+from .pagination import RecipesPagination
 
 from subscriptions.models import IsFavorite, IsInBasket, Recipe
 from users.permissions import IsAuthor, ReadOnly
@@ -43,6 +44,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
     queryset = Recipe.objects.all()
+    pagination_class = RecipesPagination
 
     def get_serializer_class(self):
         if self.request.method == 'POST' or self.request.method == 'PATCH':
