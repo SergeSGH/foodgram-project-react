@@ -5,7 +5,7 @@
 можно подписываться на других авторов и формировать список покупок для магазина
 ### Технологии:
 ```
-Python, Django, Django REST Framework, PostgreSQL, Yandex Cloud
+Python, Django, Django REST Framework, PostgreSQL, JavaScript, Yandex Cloud
 ```
 ### Войти в админ зону и отредактировать данные проекта можно здесь:
 http://foodgram.hopto.org/admin/ (login: admin, pass: admin)
