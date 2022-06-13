@@ -1,4 +1,3 @@
-[![foodgram](https://github.com/SergeSGH/foodgram-project-react/actions/workflows/main.yml/badge.svg)](https://github.com/SergeSGH/foodgram-project-react/actions/workflows/main.yml)
 # foodgram
 ### Описание:
 проект для записи своих любимых рецептов с картинками
